@@ -142,9 +142,9 @@
                 <h2 class="text-xl font-bold text-gray-800">素材管理</h2>
                 <p class="text-sm text-gray-500 mt-1">管理所有资源位的投放素材，支持图片、视频等多种格式</p>
               </div>
-              <button class="bg-[#165DFF] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 btn-click"><i class="fas fa-upload"></i> 上传素材</button>
+              <div class="proto-element" data-proto-id="m1"><button class="bg-[#165DFF] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 btn-click"><i class="fas fa-upload"></i> 上传素材</button></div>
             </div>
-            <div class="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+            <div class="proto-element bg-white rounded-lg border border-gray-200 p-4 mb-4" data-proto-id="m2">
               <div class="flex items-center gap-3">
                 <input type="text" placeholder="搜索素材名称" class="form-input border border-gray-300 rounded-lg px-3 py-2 text-sm w-56">
                 <select class="form-input border border-gray-300 rounded-lg px-3 py-2 text-sm"><option>全部类型</option><option>图片</option><option>视频</option><option>动效</option></select>
@@ -152,7 +152,7 @@
                 <button class="bg-[#165DFF] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm btn-click"><i class="fas fa-search mr-1"></i> 查询</button>
               </div>
             </div>
-            <div class="grid grid-cols-4 gap-4">
+            <div class="proto-element grid grid-cols-4 gap-4" data-proto-id="m3">
               <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
                 <div class="h-32 bg-gradient-to-br from-red-400 to-orange-400 flex items-center justify-center text-white text-2xl font-bold">618</div>
                 <div class="p-3">
@@ -203,9 +203,9 @@
                 <h2 class="text-xl font-bold text-gray-800">排期管理</h2>
                 <p class="text-sm text-gray-500 mt-1">管理资源位的投放时间排期，避免冲突，合理安排运营节奏</p>
               </div>
-              <button class="bg-[#165DFF] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 btn-click"><i class="fas fa-plus"></i> 新建排期</button>
+              <div class="proto-element" data-proto-id="s1"><button class="bg-[#165DFF] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 btn-click"><i class="fas fa-plus"></i> 新建排期</button></div>
             </div>
-            <div class="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+            <div class="proto-element bg-white rounded-lg border border-gray-200 p-4 mb-4" data-proto-id="s3">
               <div class="flex items-center gap-3">
                 <select class="form-input border border-gray-300 rounded-lg px-3 py-2 text-sm"><option>全部资源位</option><option>首页顶部Banner</option><option>开屏广告位</option><option>首页弹窗</option></select>
                 <input type="date" value="2024-06-01" class="form-input border border-gray-300 rounded-lg px-3 py-2 text-sm">
@@ -214,7 +214,7 @@
                 <button class="bg-[#165DFF] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm btn-click"><i class="fas fa-search mr-1"></i> 查询</button>
               </div>
             </div>
-            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div class="proto-element bg-white rounded-lg border border-gray-200 overflow-hidden" data-proto-id="s2">
               <table class="data-table w-full text-sm">
                 <thead><tr>
                   <th class="px-4 py-3 text-left">排期ID</th>
@@ -241,7 +241,7 @@
               <h2 class="text-xl font-bold text-gray-800">效果分析</h2>
               <p class="text-sm text-gray-500 mt-1">查看各资源位的曝光、点击、转化等核心数据指标</p>
             </div>
-            <div class="grid grid-cols-4 gap-4 mb-6">
+            <div class="proto-element grid grid-cols-4 gap-4 mb-6" data-proto-id="a1">
               <div class="bg-white rounded-lg border border-gray-200 p-4 text-center">
                 <p class="text-sm text-gray-500">总曝光(7日)</p><p class="text-2xl font-bold text-gray-800 mt-1">8.4M</p>
                 <p class="text-xs text-[#00B42A] mt-1"><i class="fas fa-arrow-up"></i> +12.3%</p>
@@ -259,7 +259,7 @@
                 <p class="text-xs text-[#F53F3F] mt-1"><i class="fas fa-arrow-down"></i> -0.1pp</p>
               </div>
             </div>
-            <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <div class="proto-element bg-white rounded-lg border border-gray-200 p-6" data-proto-id="a2">
               <h3 class="text-sm font-semibold text-gray-700 mb-4">各资源位 CTR 对比（近7日）</h3>
               <div class="space-y-3">
                 <div class="flex items-center gap-3"><span class="w-32 text-sm text-gray-600 truncate">开屏广告位</span><div class="flex-1 bg-gray-100 rounded-full h-6 overflow-hidden"><div class="h-full bg-[#165DFF] rounded-full flex items-center justify-end pr-2" style="width:85%"><span class="text-xs text-white font-medium">5.1%</span></div></div></div>
@@ -277,7 +277,7 @@
               <h2 class="text-xl font-bold text-gray-800">转化追踪</h2>
               <p class="text-sm text-gray-500 mt-1">追踪资源位点击后的用户行为路径和最终转化效果</p>
             </div>
-            <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <div class="proto-element bg-white rounded-lg border border-gray-200 p-6" data-proto-id="c1">
               <h3 class="text-sm font-semibold text-gray-700 mb-4">转化漏斗 - 首页顶部Banner (618大促)</h3>
               <div class="flex items-end justify-center gap-2 h-48">
                 <div class="flex flex-col items-center gap-1">
@@ -306,7 +306,7 @@
                   <span class="text-sm font-bold text-gray-700">2.1K</span>
                 </div>
               </div>
-              <div class="mt-4 text-center text-sm text-gray-500">整体转化率: 曝光→支付 <span class="font-bold text-[#165DFF]">0.40%</span> | 点击→支付 <span class="font-bold text-[#165DFF]">9.5%</span></div>
+              <div class="proto-element mt-4 text-center text-sm text-gray-500" data-proto-id="c2">整体转化率: 曝光→支付 <span class="font-bold text-[#165DFF]">0.40%</span> | 点击→支付 <span class="font-bold text-[#165DFF]">9.5%</span></div>
             </div>
           </div>
 
@@ -316,12 +316,12 @@
               <h2 class="text-xl font-bold text-gray-800">数据概览</h2>
               <p class="text-sm text-gray-500 mt-1">全局运营数据一览</p>
             </div>
-            <div class="grid grid-cols-3 gap-4 mb-6">
+            <div class="proto-element grid grid-cols-3 gap-4 mb-6" data-proto-id="d1">
               <div class="bg-white rounded-lg border border-gray-200 p-5 text-center"><p class="text-sm text-gray-500">本月总曝光</p><p class="text-3xl font-bold text-gray-800 mt-2">36.2M</p></div>
               <div class="bg-white rounded-lg border border-gray-200 p-5 text-center"><p class="text-sm text-gray-500">本月总点击</p><p class="text-3xl font-bold text-[#165DFF] mt-2">1.5M</p></div>
               <div class="bg-white rounded-lg border border-gray-200 p-5 text-center"><p class="text-sm text-gray-500">本月转化订单</p><p class="text-3xl font-bold text-[#00B42A] mt-2">89.2K</p></div>
             </div>
-            <div class="bg-white rounded-lg border border-gray-200 p-5">
+            <div class="proto-element bg-white rounded-lg border border-gray-200 p-5" data-proto-id="d2">
               <h3 class="text-sm font-semibold text-gray-700 mb-3">资源位状态分布</h3>
               <div class="flex items-center gap-6">
                 <div class="flex items-center gap-2"><span class="w-3 h-3 bg-[#00B42A] rounded-full"></span><span class="text-sm text-gray-600">投放中: 18</span></div>
@@ -338,7 +338,7 @@
               <h2 class="text-xl font-bold text-gray-800">权限管理</h2>
               <p class="text-sm text-gray-500 mt-1">管理团队成员的资源位操作权限</p>
             </div>
-            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div class="proto-element bg-white rounded-lg border border-gray-200 overflow-hidden" data-proto-id="p1">
               <table class="data-table w-full text-sm">
                 <thead><tr><th class="px-4 py-3 text-left">用户</th><th class="px-4 py-3 text-left">角色</th><th class="px-4 py-3 text-center">可管理资源位</th><th class="px-4 py-3 text-center">操作</th></tr></thead>
                 <tbody>
@@ -347,6 +347,9 @@
                   <tr><td class="px-4 py-3"><div class="flex items-center gap-2"><div class="w-7 h-7 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-xs font-bold">王</div><span>王五</span></div></td><td class="px-4 py-3"><span class="tag tag-gray">只读</span></td><td class="px-4 py-3 text-center">全部(只读)</td><td class="px-4 py-3 text-center"><button class="text-[#165DFF] text-sm btn-click">编辑</button></td></tr>
                 </tbody>
               </table>
+            </div>
+            <div class="proto-element mt-4" data-proto-id="p2">
+              <button class="bg-[#165DFF] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 btn-click"><i class="fas fa-user-plus"></i> 添加成员</button>
             </div>
           </div>
 
@@ -357,18 +360,18 @@
               <p class="text-sm text-gray-500 mt-1">配置资源位系统的全局参数</p>
             </div>
             <div class="space-y-4">
-              <div class="bg-white rounded-lg border border-gray-200 p-4">
+              <div class="proto-element bg-white rounded-lg border border-gray-200 p-4" data-proto-id="st1">
                 <h3 class="text-sm font-semibold text-gray-700 mb-3">素材审核设置</h3>
                 <div class="flex items-center justify-between"><span class="text-sm text-gray-600">上传素材需审核</span><div class="w-10 h-5 bg-[#165DFF] rounded-full relative cursor-pointer"><div class="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow"></div></div></div>
               </div>
-              <div class="bg-white rounded-lg border border-gray-200 p-4">
+              <div class="proto-element bg-white rounded-lg border border-gray-200 p-4" data-proto-id="st2">
                 <h3 class="text-sm font-semibold text-gray-700 mb-3">默认投放规则</h3>
                 <div class="grid grid-cols-2 gap-4">
                   <div><label class="text-xs text-gray-500">默认展示频次</label><select class="form-input w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"><option>每日不限次</option><option>每日1次</option><option>每日3次</option></select></div>
                   <div><label class="text-xs text-gray-500">默认定向</label><select class="form-input w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"><option>全量用户</option><option>新用户</option><option>活跃用户</option></select></div>
                 </div>
               </div>
-              <div class="bg-white rounded-lg border border-gray-200 p-4">
+              <div class="proto-element bg-white rounded-lg border border-gray-200 p-4" data-proto-id="st3">
                 <h3 class="text-sm font-semibold text-gray-700 mb-3">数据报告</h3>
                 <div class="flex items-center justify-between"><span class="text-sm text-gray-600">每日自动发送数据报告到飞书</span><div class="w-10 h-5 bg-gray-300 rounded-full relative cursor-pointer"><div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow"></div></div></div>
               </div>
@@ -602,7 +605,7 @@
     <!-- 分隔线 -->
     <div id="divider" class="w-px bg-gray-300"></div>
 
-    <!-- 右侧：功能说明 -->
+    <!-- 右侧：功能说明（动态切换） -->
     <div id="right-panel" class="w-[22%] lg:w-[20%] overflow-y-auto bg-amber-50 border-l-2 border-dashed border-amber-300">
       <div class="p-4">
         <div class="mb-4 p-3 bg-amber-100 border border-amber-300 rounded-lg">
@@ -610,69 +613,171 @@
             <span class="px-2 py-0.5 bg-amber-500 text-white text-[10px] font-bold rounded uppercase tracking-wide">Prototype</span>
             <span class="text-xs font-semibold text-amber-800">原型说明</span>
           </div>
-          <p class="text-[11px] text-amber-700 leading-relaxed">
-            运营资源位后台管理系统，用于管理 App/H5/小程序中的 Banner、开屏、弹窗、信息流等广告资源位。悬停左侧区域可高亮连线。
-          </p>
+          <p class="text-[11px] text-amber-700 leading-relaxed">悬停左侧标注区域可高亮连线联动。</p>
         </div>
-
         <div class="flex items-center gap-2 mb-4 pb-3 border-b border-amber-200">
           <i class="fas fa-map-signs text-amber-600"></i>
           <h2 class="text-sm font-bold text-amber-900">功能说明</h2>
         </div>
 
-        <div class="space-y-3">
+        <!-- 说明：资源位列表 -->
+        <div class="desc-section space-y-3" data-for-page="slot-list">
           <div class="proto-desc p-3" data-proto-id="1">
             <div class="flex items-start gap-2">
               <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">1</span>
-              <div>
-                <h3 class="text-sm font-semibold text-gray-800">资源位列表</h3>
-                <p class="text-xs text-gray-500 mt-1">核心管理入口。展示所有已创建的资源位，支持按位置类型、状态、适用端等维度筛选。可快速查看每个资源位的实时数据表现。</p>
-              </div>
+              <div><h3 class="text-sm font-semibold text-gray-800">资源位列表菜单</h3><p class="text-xs text-gray-500 mt-1">核心管理入口，点击进入资源位管理主界面。</p></div>
             </div>
           </div>
-
           <div class="proto-desc p-3" data-proto-id="2">
             <div class="flex items-start gap-2">
               <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">2</span>
-              <div>
-                <h3 class="text-sm font-semibold text-gray-800">新建资源位</h3>
-                <p class="text-xs text-gray-500 mt-1">创建新的运营资源位。需配置：</p>
-                <ul class="text-xs text-gray-500 mt-1 ml-4 list-disc space-y-0.5">
-                  <li><strong>基础信息</strong>：名称、位置类型（Banner/开屏/弹窗/信息流/浮标）</li>
-                  <li><strong>展示规则</strong>：适用端、展示频次、用户定向</li>
-                  <li><strong>投放时间</strong>：开始/结束时间、排期策略</li>
-                </ul>
-              </div>
+              <div><h3 class="text-sm font-semibold text-gray-800">新建资源位</h3><p class="text-xs text-gray-500 mt-1">创建新的运营资源位，配置名称、位置类型、适用端、尺寸规格、展示频次和投放时间。</p></div>
             </div>
           </div>
-
           <div class="proto-desc p-3" data-proto-id="3">
             <div class="flex items-start gap-2">
               <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">3</span>
-              <div>
-                <h3 class="text-sm font-semibold text-gray-800">多维度筛选</h3>
-                <p class="text-xs text-gray-500 mt-1">支持按资源位名称/ID搜索，以及按位置类型、投放状态、适用客户端进行组合筛选，快速定位目标资源位。</p>
-              </div>
+              <div><h3 class="text-sm font-semibold text-gray-800">多维度筛选</h3><p class="text-xs text-gray-500 mt-1">按名称/ID搜索，按位置类型、状态、适用端组合筛选，快速定位资源位。</p></div>
             </div>
           </div>
-
           <div class="proto-desc p-3" data-proto-id="4">
             <div class="flex items-start gap-2">
               <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">4</span>
-              <div>
-                <h3 class="text-sm font-semibold text-gray-800">资源位数据表格</h3>
-                <p class="text-xs text-gray-500 mt-1">以列表形式展示所有资源位信息，包含：</p>
-                <ul class="text-xs text-gray-500 mt-1 ml-4 list-disc space-y-0.5">
-                  <li><strong>基本属性</strong>：ID、名称、位置类型、适用端</li>
-                  <li><strong>当前投放</strong>：正在展示的内容名称</li>
-                  <li><strong>实时数据</strong>：今日曝光量、点击率</li>
-                  <li><strong>状态管理</strong>：投放中/已暂停/待上线/已过期</li>
-                  <li><strong>操作入口</strong>：配置详情、暂停/启用投放</li>
-                </ul>
-              </div>
+              <div><h3 class="text-sm font-semibold text-gray-800">资源位数据表格</h3><p class="text-xs text-gray-500 mt-1">展示ID、名称、类型、适用端、当前内容、曝光量、点击率、状态。支持行选中、配置详情和暂停/启用操作。</p></div>
             </div>
           </div>
         </div>
+
+        <!-- 说明：素材管理 -->
+        <div class="desc-section space-y-3 hidden" data-for-page="material">
+          <div class="proto-desc p-3" data-proto-id="m1">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">1</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">素材上传</h3><p class="text-xs text-gray-500 mt-1">支持图片(JPG/PNG/GIF)、视频(MP4)、动效(Lottie)等格式。上传后进入审核流程。</p></div>
+            </div>
+          </div>
+          <div class="proto-desc p-3" data-proto-id="m2">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">2</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">素材筛选</h3><p class="text-xs text-gray-500 mt-1">按类型（图片/视频/动效）和审核状态（通过/审核中/已驳回）筛选。</p></div>
+            </div>
+          </div>
+          <div class="proto-desc p-3" data-proto-id="m3">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">3</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">素材卡片</h3><p class="text-xs text-gray-500 mt-1">网格展示素材缩略图、名称、审核状态和尺寸规格。点击可预览大图或编辑详情。</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 说明：排期管理 -->
+        <div class="desc-section space-y-3 hidden" data-for-page="schedule">
+          <div class="proto-desc p-3" data-proto-id="s1">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">1</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">新建排期</h3><p class="text-xs text-gray-500 mt-1">为资源位创建投放排期，设置素材内容、起止时间和优先级。系统自动检测时间冲突。</p></div>
+            </div>
+          </div>
+          <div class="proto-desc p-3" data-proto-id="s2">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">2</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">排期列表</h3><p class="text-xs text-gray-500 mt-1">展示所有排期记录。优先级P0最高，冲突时高优先级覆盖低优先级。状态分为进行中、待开始、已结束。</p></div>
+            </div>
+          </div>
+          <div class="proto-desc p-3" data-proto-id="s3">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">3</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">时间筛选</h3><p class="text-xs text-gray-500 mt-1">按资源位和时间范围筛选排期，可按周/月维度查看排期日历视图。</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 说明：效果分析 -->
+        <div class="desc-section space-y-3 hidden" data-for-page="analytics">
+          <div class="proto-desc p-3" data-proto-id="a1">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">1</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">核心指标</h3><p class="text-xs text-gray-500 mt-1">展示近7日的总曝光、总点击、平均CTR和转化率，以及环比变化趋势。</p></div>
+            </div>
+          </div>
+          <div class="proto-desc p-3" data-proto-id="a2">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">2</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">CTR对比图</h3><p class="text-xs text-gray-500 mt-1">横向对比各资源位的点击率表现，快速发现效果最好和最差的资源位，指导优化方向。</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 说明：转化追踪 -->
+        <div class="desc-section space-y-3 hidden" data-for-page="conversion">
+          <div class="proto-desc p-3" data-proto-id="c1">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">1</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">转化漏斗</h3><p class="text-xs text-gray-500 mt-1">可视化展示用户从曝光→点击→加购→下单→支付的完整转化链路，每一步的流失率一目了然。</p></div>
+            </div>
+          </div>
+          <div class="proto-desc p-3" data-proto-id="c2">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">2</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">转化率计算</h3><p class="text-xs text-gray-500 mt-1">提供曝光→支付的整体转化率和点击→支付的有效转化率两个核心指标，用于评估资源位商业价值。</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 说明：数据概览 -->
+        <div class="desc-section space-y-3 hidden" data-for-page="dashboard">
+          <div class="proto-desc p-3" data-proto-id="d1">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">1</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">全局数据</h3><p class="text-xs text-gray-500 mt-1">展示本月总曝光、总点击、转化订单三大核心指标，一眼掌握运营全局表现。</p></div>
+            </div>
+          </div>
+          <div class="proto-desc p-3" data-proto-id="d2">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">2</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">状态分布</h3><p class="text-xs text-gray-500 mt-1">按投放中/待上线/已暂停/已过期分类统计资源位数量，快速了解整体健康度。</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 说明：权限管理 -->
+        <div class="desc-section space-y-3 hidden" data-for-page="permission">
+          <div class="proto-desc p-3" data-proto-id="p1">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">1</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">角色权限</h3><p class="text-xs text-gray-500 mt-1">三级权限：超级管理员（全部）、运营（指定资源位）、只读（仅查看）。角色决定可管理的资源位范围。</p></div>
+            </div>
+          </div>
+          <div class="proto-desc p-3" data-proto-id="p2">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">2</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">成员管理</h3><p class="text-xs text-gray-500 mt-1">添加/编辑团队成员的角色分配和资源位访问范围，确保运营操作安全可控。</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 说明：系统配置 -->
+        <div class="desc-section space-y-3 hidden" data-for-page="settings">
+          <div class="proto-desc p-3" data-proto-id="st1">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">1</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">审核设置</h3><p class="text-xs text-gray-500 mt-1">控制素材上传是否需要审核，开启后所有新素材需经审批才能投放。</p></div>
+            </div>
+          </div>
+          <div class="proto-desc p-3" data-proto-id="st2">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">2</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">默认规则</h3><p class="text-xs text-gray-500 mt-1">配置新建资源位时的默认展示频次和用户定向策略，减少重复配置工作。</p></div>
+            </div>
+          </div>
+          <div class="proto-desc p-3" data-proto-id="st3">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">3</span>
+              <div><h3 class="text-sm font-semibold text-gray-800">数据报告</h3><p class="text-xs text-gray-500 mt-1">开启后每日自动将资源位数据表现汇总报告发送到飞书群。</p></div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -997,8 +1102,13 @@
       document.querySelectorAll('.sidebar-menu-item').forEach(item => item.classList.remove('active'));
       const menuItem = document.querySelector(`.sidebar-menu-item[data-page="${pageId}"]`);
       if (menuItem) menuItem.classList.add('active');
-      // Redraw connections after page switch
-      setTimeout(scheduleRedraw, 50);
+      // Switch right panel descriptions
+      document.querySelectorAll('.desc-section').forEach(s => s.classList.add('hidden'));
+      const descSection = document.querySelector(`.desc-section[data-for-page="${pageId}"]`);
+      if (descSection) descSection.classList.remove('hidden');
+      // Reset hover state and rebind + redraw
+      hoveredId = null;
+      setTimeout(() => { drawConnections(); bindHoverEvents(); }, 80);
     }
 
     function openModal(id) { document.getElementById(id).classList.remove('modal-hidden'); }
