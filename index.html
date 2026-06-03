@@ -1026,8 +1026,14 @@
         const rightEl = document.querySelector(`.proto-desc[data-proto-id="${protoId}"]`);
         if (!rightEl) return;
 
+        // Skip if either element is hidden (inside a hidden parent)
+        if (leftEl.offsetParent === null || rightEl.offsetParent === null) return;
+
         const leftRect = leftEl.getBoundingClientRect();
         const rightRect = rightEl.getBoundingClientRect();
+
+        // Skip if rects are zero-sized (element not rendered)
+        if (leftRect.width === 0 || rightRect.width === 0) return;
 
         // SVG is position:fixed, so viewport coords map directly
         const x1 = leftRect.right;
