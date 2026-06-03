@@ -21,9 +21,9 @@
     .proto-desc:hover { background-color: #fef3c7; border-color: #f59e0b; box-shadow: 0 2px 8px rgba(245,158,11,0.15); }
     .proto-desc.active-highlight { background-color: #fde68a; border-color: #d97706; box-shadow: 0 2px 8px rgba(245,158,11,0.25); }
 
-    #connections { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
-    .connection-line { fill: none; stroke: #165DFF; stroke-width: 2; opacity: 0.6; transition: all 0.2s ease; }
-    .connection-line.active { stroke-width: 3; opacity: 1; }
+    #connections { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 50; }
+    .connection-line { fill: none; stroke: #165DFF; stroke-width: 1.5; opacity: 0.4; transition: all 0.25s ease; }
+    .connection-line.active { stroke-width: 3; opacity: 1; filter: drop-shadow(0 0 4px rgba(22,93,255,0.4)); }
     .connection-label { fill: #fff; font-size: 12px; font-weight: bold; text-anchor: middle; dominant-baseline: central; }
     .connection-label-bg { fill: #165DFF; }
 
@@ -73,6 +73,8 @@
   </button>
 
   <div id="app" class="flex h-screen relative">
+    <!-- SVG 连线层 -->
+    <svg id="connections" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:50;"></svg>
 
     <!-- 左侧：产品界面 -->
     <div id="left-panel" class="w-[78%] lg:w-[80%] overflow-y-auto bg-gray-50 relative">
@@ -430,8 +432,6 @@
     </div>
   </div>
 
-  <!-- SVG 连线层 -->
-  <svg id="connections" class="absolute top-0 left-0 w-full h-full pointer-events-none"></svg>
 
   <!-- 模态框：资源位配置详情 -->
   <div id="detailModal" class="modal-overlay modal-hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
@@ -661,14 +661,14 @@
 
   <script>
     const svg = document.getElementById('connections');
-    const connections = [];
+    let connections = [];
+    let hoveredId = null;
 
     function drawConnections() {
       svg.innerHTML = '';
-      connections.length = 0;
+      connections = [];
 
       const leftElements = document.querySelectorAll('.proto-element[data-proto-id]');
-      const rightElements = document.querySelectorAll('.proto-desc[data-proto-id]');
 
       leftElements.forEach(leftEl => {
         const protoId = leftEl.getAttribute('data-proto-id');
@@ -677,24 +677,25 @@
 
         const leftRect = leftEl.getBoundingClientRect();
         const rightRect = rightEl.getBoundingClientRect();
-        const svgRect = svg.getBoundingClientRect();
 
-        const x1 = leftRect.right - svgRect.left;
-        const y1 = leftRect.top + leftRect.height / 2 - svgRect.top;
-        const x2 = rightRect.left - svgRect.left;
-        const y2 = rightRect.top + rightRect.height / 2 - svgRect.top;
+        // SVG is position:fixed, so viewport coords map directly
+        const x1 = leftRect.right;
+        const y1 = leftRect.top + leftRect.height / 2;
+        const x2 = rightRect.left;
+        const y2 = rightRect.top + rightRect.height / 2;
 
-        const cp1x = x1 + (x2 - x1) * 0.5;
-        const cp1y = y1;
-        const cp2x = x1 + (x2 - x1) * 0.5;
-        const cp2y = y2;
+        // Skip if element is not visible in viewport
+        if (y1 < -50 || y1 > window.innerHeight + 50) return;
+        if (y2 < -50 || y2 > window.innerHeight + 50) return;
 
+        const cpOffset = (x2 - x1) * 0.45;
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`);
-        path.setAttribute('class', 'connection-line');
+        path.setAttribute('d', `M ${x1} ${y1} C ${x1 + cpOffset} ${y1}, ${x2 - cpOffset} ${y2}, ${x2} ${y2}`);
+        path.setAttribute('class', 'connection-line' + (hoveredId === protoId ? ' active' : ''));
         path.setAttribute('data-proto-id', protoId);
         svg.appendChild(path);
 
+        // Label circle at midpoint
         const midX = (x1 + x2) / 2;
         const midY = (y1 + y2) / 2;
         const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -702,6 +703,7 @@
         bg.setAttribute('cy', midY);
         bg.setAttribute('r', 11);
         bg.setAttribute('class', 'connection-label-bg');
+        bg.style.opacity = hoveredId === protoId ? '1' : '0.7';
         svg.appendChild(bg);
 
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -717,17 +719,16 @@
     }
 
     function highlightConnection(protoId, active) {
-      const conn = connections.find(c => c.protoId === protoId);
-      if (!conn) return;
-      if (active) {
-        conn.path.classList.add('active');
-        conn.leftEl.classList.add('active-highlight');
-        conn.rightEl.classList.add('active-highlight');
-      } else {
-        conn.path.classList.remove('active');
-        conn.leftEl.classList.remove('active-highlight');
-        conn.rightEl.classList.remove('active-highlight');
-      }
+      hoveredId = active ? protoId : null;
+      // Redraw to update line styles
+      drawConnections();
+      // Also toggle element highlights
+      connections.forEach(conn => {
+        if (conn.protoId === protoId) {
+          conn.leftEl.classList.toggle('active-highlight', active);
+          conn.rightEl.classList.toggle('active-highlight', active);
+        }
+      });
     }
 
     function bindHoverEvents() {
@@ -765,12 +766,24 @@
       }
     }
 
-    function init() { drawConnections(); bindHoverEvents(); }
-    document.addEventListener('DOMContentLoaded', () => { setTimeout(init, 100); });
-    let resizeTimer;
-    window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(init, 150); });
-    document.getElementById('left-panel').addEventListener('scroll', () => { requestAnimationFrame(drawConnections); });
-    document.getElementById('right-panel').addEventListener('scroll', () => { requestAnimationFrame(drawConnections); });
+    function init() {
+      drawConnections();
+      bindHoverEvents();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => { setTimeout(init, 200); });
+
+    let rafId = null;
+    function scheduleRedraw() {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => { rafId = null; drawConnections(); });
+    }
+
+    window.addEventListener('resize', scheduleRedraw);
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('left-panel').addEventListener('scroll', scheduleRedraw);
+      document.getElementById('right-panel').addEventListener('scroll', scheduleRedraw);
+    });
   </script>
 </body>
 </html>
