@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>产品原型 - 运营资源位后台管理系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; overflow: hidden; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #F5F7FA; }
+    ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+    .proto-element { position: relative; transition: all 0.2s ease; border-radius: 6px; }
+    .proto-element:hover { box-shadow: 0 0 0 2px #165DFF, 0 4px 12px rgba(22,93,255,0.15); background-color: rgba(22,93,255,0.03); }
+    .proto-element.active-highlight { box-shadow: 0 0 0 2px #165DFF, 0 4px 12px rgba(22,93,255,0.2); background-color: rgba(22,93,255,0.05); }
+
+    .proto-desc { transition: all 0.2s ease; border-radius: 6px; border: 1px solid #fde68a; background-color: #fffbeb; }
+    .proto-desc:hover { background-color: #fef3c7; border-color: #f59e0b; box-shadow: 0 2px 8px rgba(245,158,11,0.15); }
+    .proto-desc.active-highlight { background-color: #fde68a; border-color: #d97706; box-shadow: 0 2px 8px rgba(245,158,11,0.25); }
+
+    #connections { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+    .connection-line { fill: none; stroke: #165DFF; stroke-width: 2; opacity: 0.6; transition: all 0.2s ease; }
+    .connection-line.active { stroke-width: 3; opacity: 1; }
+    .connection-label { fill: #fff; font-size: 12px; font-weight: bold; text-anchor: middle; dominant-baseline: central; }
+    .connection-label-bg { fill: #165DFF; }
+
+    .sidebar-menu-item { transition: all 0.2s; cursor: pointer; }
+    .sidebar-menu-item:hover { background-color: rgba(22,93,255,0.08); color: #165DFF; }
+    .sidebar-menu-item.active { background-color: rgba(22,93,255,0.12); color: #165DFF; border-right: 3px solid #165DFF; }
+
+    .data-table th { background-color: #F5F7FA; font-weight: 600; color: #333; }
+    .data-table tbody tr { transition: background-color 0.15s; cursor: pointer; }
+    .data-table tbody tr:hover { background-color: rgba(22,93,255,0.04); }
+    .data-table tbody tr.selected { background-color: rgba(22,93,255,0.08); }
+
+    .tag { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+    .tag-blue { background-color: rgba(22,93,255,0.1); color: #165DFF; }
+    .tag-green { background-color: rgba(0,180,42,0.1); color: #00B42A; }
+    .tag-red { background-color: rgba(245,63,63,0.1); color: #F53F3F; }
+    .tag-orange { background-color: rgba(255,125,0,0.1); color: #FF7D00; }
+    .tag-gray { background-color: #F5F7FA; color: #666; }
+    .tag-purple { background-color: rgba(114,46,209,0.1); color: #722ED1; }
+
+    .modal-overlay { transition: opacity 0.3s ease; }
+    .modal-content { transition: transform 0.3s ease, opacity 0.3s ease; }
+    .modal-hidden { opacity: 0; pointer-events: none; }
+    .modal-hidden .modal-content { transform: scale(0.95); opacity: 0; }
+
+    @media (max-width: 768px) {
+      #app { flex-direction: column; }
+      #left-panel { width: 100% !important; height: 60vh; }
+      #divider { display: none; }
+      #right-panel { width: 100% !important; height: 40vh; border-top: 1px solid #e5e7eb; }
+      #connections { display: none; }
+      .mobile-toggle-btn { display: flex !important; }
+    }
+    .mobile-toggle-btn { display: none; position: fixed; bottom: 20px; right: 20px; z-index: 100; width: 48px; height: 48px; border-radius: 50%; background: #165DFF; color: white; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(22,93,255,0.3); cursor: pointer; border: none; }
+
+    .btn-click:active { transform: scale(0.96); }
+    .form-input:focus { border-color: #165DFF; box-shadow: 0 0 0 3px rgba(22,93,255,0.1); outline: none; }
+
+    .stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+  <button class="mobile-toggle-btn" id="mobileToggle" onclick="toggleMobileView()">
+    <i class="fas fa-info"></i>
+  </button>
+
+  <div id="app" class="flex h-screen relative">
+
+    <!-- 左侧：产品界面 -->
+    <div id="left-panel" class="w-[78%] lg:w-[80%] overflow-y-auto bg-gray-50 relative">
+
+      <!-- 顶部导航栏 -->
+      <header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between sticky top-0 z-10">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-[#165DFF] rounded-lg flex items-center justify-center text-white font-bold text-sm">
+            <i class="fas fa-th-large"></i>
+          </div>
+          <h1 class="text-lg font-semibold text-gray-800">运营资源位管理平台</h1>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="text-sm text-gray-600"><i class="fas fa-user-circle mr-1"></i> 运营管理员</span>
+          <button class="text-gray-500 hover:text-gray-700 btn-click relative">
+            <i class="fas fa-bell"></i>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">3</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="flex">
+        <!-- 侧边菜单 -->
+        <aside class="w-56 bg-white border-r border-gray-200 min-h-[calc(100vh-56px)]">
+          <nav class="py-4">
+            <div class="px-4 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">资源位管理</div>
+            <div class="sidebar-menu-item px-4 py-2.5 flex items-center gap-3 text-gray-700">
+              <i class="fas fa-tachometer-alt w-5 text-center"></i><span class="text-sm">数据概览</span>
+            </div>
+            <!-- 连线 1：资源位列表菜单 -->
+            <div class="proto-element sidebar-menu-item active px-4 py-2.5 flex items-center gap-3 text-gray-700" data-proto-id="1">
+              <i class="fas fa-layer-group w-5 text-center"></i><span class="text-sm">资源位列表</span>
+            </div>
+            <div class="sidebar-menu-item px-4 py-2.5 flex items-center gap-3 text-gray-700">
+              <i class="fas fa-image w-5 text-center"></i><span class="text-sm">素材管理</span>
+            </div>
+            <div class="sidebar-menu-item px-4 py-2.5 flex items-center gap-3 text-gray-700">
+              <i class="fas fa-calendar-alt w-5 text-center"></i><span class="text-sm">排期管理</span>
+            </div>
+            <div class="px-4 mt-4 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">数据分析</div>
+            <div class="sidebar-menu-item px-4 py-2.5 flex items-center gap-3 text-gray-700">
+              <i class="fas fa-chart-line w-5 text-center"></i><span class="text-sm">效果分析</span>
+            </div>
+            <div class="sidebar-menu-item px-4 py-2.5 flex items-center gap-3 text-gray-700">
+              <i class="fas fa-funnel-dollar w-5 text-center"></i><span class="text-sm">转化追踪</span>
+            </div>
+            <div class="px-4 mt-4 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">系统设置</div>
+            <div class="sidebar-menu-item px-4 py-2.5 flex items-center gap-3 text-gray-700">
+              <i class="fas fa-users-cog w-5 text-center"></i><span class="text-sm">权限管理</span>
+            </div>
+            <div class="sidebar-menu-item px-4 py-2.5 flex items-center gap-3 text-gray-700">
+              <i class="fas fa-cog w-5 text-center"></i><span class="text-sm">系统配置</span>
+            </div>
+          </nav>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="flex-1 p-6">
+          <!-- 页面标题栏 -->
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="text-xl font-bold text-gray-800">资源位列表</h2>
+              <p class="text-sm text-gray-500 mt-1">管理所有运营资源位的配置、投放内容和展示规则</p>
+            </div>
+            <!-- 连线 2：新建资源位按钮 -->
+            <div class="proto-element" data-proto-id="2">
+              <button onclick="openModal('addSlotModal')" class="bg-[#165DFF] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 btn-click transition-colors">
+                <i class="fas fa-plus"></i> 新建资源位
+              </button>
+            </div>
+          </div>
+
+          <!-- 数据统计卡片 -->
+          <div class="grid grid-cols-4 gap-4 mb-6">
+            <div class="stat-card bg-white rounded-lg border border-gray-200 p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-gray-500">资源位总数</p>
+                  <p class="text-2xl font-bold text-gray-800 mt-1">24</p>
+                </div>
+                <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-layer-group text-[#165DFF]"></i>
+                </div>
+              </div>
+            </div>
+            <div class="stat-card bg-white rounded-lg border border-gray-200 p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-gray-500">投放中</p>
+                  <p class="text-2xl font-bold text-[#00B42A] mt-1">18</p>
+                </div>
+                <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-play-circle text-[#00B42A]"></i>
+                </div>
+              </div>
+            </div>
+            <div class="stat-card bg-white rounded-lg border border-gray-200 p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-gray-500">今日曝光</p>
+                  <p class="text-2xl font-bold text-gray-800 mt-1">1.2M</p>
+                </div>
+                <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-eye text-purple-500"></i>
+                </div>
+              </div>
+            </div>
+            <div class="stat-card bg-white rounded-lg border border-gray-200 p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-gray-500">平均点击率</p>
+                  <p class="text-2xl font-bold text-[#FF7D00] mt-1">3.8%</p>
+                </div>
+                <div class="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-mouse-pointer text-[#FF7D00]"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 搜索筛选栏 -->
+          <!-- 连线 3：筛选区域 -->
+          <div class="proto-element bg-white rounded-lg border border-gray-200 p-4 mb-4" data-proto-id="3">
+            <div class="flex items-center gap-3 flex-wrap">
+              <input type="text" placeholder="搜索资源位名称/ID" class="form-input border border-gray-300 rounded-lg px-3 py-2 text-sm w-56">
+              <select class="form-input border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <option>全部位置</option>
+                <option>首页Banner</option>
+                <option>开屏广告</option>
+                <option>信息流</option>
+                <option>弹窗</option>
+                <option>浮标</option>
+              </select>
+              <select class="form-input border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <option>全部状态</option>
+                <option>投放中</option>
+                <option>已暂停</option>
+                <option>待上线</option>
+                <option>已过期</option>
+              </select>
+              <select class="form-input border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <option>全部端</option>
+                <option>iOS</option>
+                <option>Android</option>
+                <option>H5</option>
+                <option>小程序</option>
+              </select>
+              <button class="bg-[#165DFF] hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm btn-click">
+                <i class="fas fa-search mr-1"></i> 查询
+              </button>
+              <button class="text-gray-500 hover:text-gray-700 text-sm px-2 btn-click">
+                <i class="fas fa-redo mr-1"></i> 重置
+              </button>
+            </div>
+          </div>
+
+          <!-- 资源位列表 -->
+          <!-- 连线 4：资源位数据表格 -->
+          <div class="proto-element bg-white rounded-lg border border-gray-200 overflow-hidden" data-proto-id="4">
+            <div class="overflow-x-auto">
+              <table class="data-table w-full text-sm">
+                <thead>
+                  <tr>
+                    <th class="px-4 py-3 text-left">资源位ID</th>
+                    <th class="px-4 py-3 text-left">资源位名称</th>
+                    <th class="px-4 py-3 text-left">位置类型</th>
+                    <th class="px-4 py-3 text-center">适用端</th>
+                    <th class="px-4 py-3 text-center">当前内容</th>
+                    <th class="px-4 py-3 text-center">今日曝光</th>
+                    <th class="px-4 py-3 text-center">点击率</th>
+                    <th class="px-4 py-3 text-center">状态</th>
+                    <th class="px-4 py-3 text-center">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="selected" onclick="selectRow(this)">
+                    <td class="px-4 py-3 font-mono text-[#165DFF]">RS-001</td>
+                    <td class="px-4 py-3 font-medium">首页顶部Banner</td>
+                    <td class="px-4 py-3"><span class="tag tag-blue">Banner</span></td>
+                    <td class="px-4 py-3 text-center">
+                      <span class="tag tag-gray mr-1">iOS</span>
+                      <span class="tag tag-gray">Android</span>
+                    </td>
+                    <td class="px-4 py-3 text-center text-gray-600">618大促主会场</td>
+                    <td class="px-4 py-3 text-center font-medium">523,841</td>
+                    <td class="px-4 py-3 text-center"><span class="font-medium text-[#00B42A]">4.2%</span></td>
+                    <td class="px-4 py-3 text-center"><span class="tag tag-green">投放中</span></td>
+                    <td class="px-4 py-3 text-center">
+                      <button onclick="event.stopPropagation();openModal('detailModal')" class="text-[#165DFF] hover:text-blue-700 text-sm mr-2 btn-click">配置</button>
+                      <button onclick="event.stopPropagation()" class="text-gray-500 hover:text-gray-700 text-sm btn-click">暂停</button>
+                    </td>
+                  </tr>
+                  <tr onclick="selectRow(this)">
+                    <td class="px-4 py-3 font-mono text-[#165DFF]">RS-002</td>
+                    <td class="px-4 py-3 font-medium">开屏广告位</td>
+                    <td class="px-4 py-3"><span class="tag tag-purple">开屏</span></td>
+                    <td class="px-4 py-3 text-center">
+                      <span class="tag tag-gray mr-1">iOS</span>
+                      <span class="tag tag-gray mr-1">Android</span>
+                      <span class="tag tag-gray">H5</span>
+                    </td>
+                    <td class="px-4 py-3 text-center text-gray-600">品牌日活动</td>
+                    <td class="px-4 py-3 text-center font-medium">312,567</td>
+                    <td class="px-4 py-3 text-center"><span class="font-medium text-[#00B42A]">5.1%</span></td>
+                    <td class="px-4 py-3 text-center"><span class="tag tag-green">投放中</span></td>
+                    <td class="px-4 py-3 text-center">
+                      <button onclick="event.stopPropagation();openModal('detailModal')" class="text-[#165DFF] hover:text-blue-700 text-sm mr-2 btn-click">配置</button>
+                      <button onclick="event.stopPropagation()" class="text-gray-500 hover:text-gray-700 text-sm btn-click">暂停</button>
+                    </td>
+                  </tr>
+                  <tr onclick="selectRow(this)">
+                    <td class="px-4 py-3 font-mono text-[#165DFF]">RS-003</td>
+                    <td class="px-4 py-3 font-medium">首页弹窗</td>
+                    <td class="px-4 py-3"><span class="tag tag-orange">弹窗</span></td>
+                    <td class="px-4 py-3 text-center">
+                      <span class="tag tag-gray">全端</span>
+                    </td>
+                    <td class="px-4 py-3 text-center text-gray-600">新人红包</td>
+                    <td class="px-4 py-3 text-center font-medium">89,234</td>
+                    <td class="px-4 py-3 text-center"><span class="font-medium text-[#FF7D00]">2.8%</span></td>
+                    <td class="px-4 py-3 text-center"><span class="tag tag-orange">待上线</span></td>
+                    <td class="px-4 py-3 text-center">
+                      <button onclick="event.stopPropagation();openModal('detailModal')" class="text-[#165DFF] hover:text-blue-700 text-sm mr-2 btn-click">配置</button>
+                      <button onclick="event.stopPropagation()" class="text-[#00B42A] hover:text-green-700 text-sm btn-click">上线</button>
+                    </td>
+                  </tr>
+                  <tr onclick="selectRow(this)">
+                    <td class="px-4 py-3 font-mono text-[#165DFF]">RS-004</td>
+                    <td class="px-4 py-3 font-medium">信息流推荐位</td>
+                    <td class="px-4 py-3"><span class="tag tag-blue">信息流</span></td>
+                    <td class="px-4 py-3 text-center">
+                      <span class="tag tag-gray mr-1">iOS</span>
+                      <span class="tag tag-gray">Android</span>
+                    </td>
+                    <td class="px-4 py-3 text-center text-gray-600">好物推荐</td>
+                    <td class="px-4 py-3 text-center font-medium">201,456</td>
+                    <td class="px-4 py-3 text-center"><span class="font-medium text-[#00B42A]">3.5%</span></td>
+                    <td class="px-4 py-3 text-center"><span class="tag tag-green">投放中</span></td>
+                    <td class="px-4 py-3 text-center">
+                      <button onclick="event.stopPropagation();openModal('detailModal')" class="text-[#165DFF] hover:text-blue-700 text-sm mr-2 btn-click">配置</button>
+                      <button onclick="event.stopPropagation()" class="text-gray-500 hover:text-gray-700 text-sm btn-click">暂停</button>
+                    </td>
+                  </tr>
+                  <tr onclick="selectRow(this)">
+                    <td class="px-4 py-3 font-mono text-[#165DFF]">RS-005</td>
+                    <td class="px-4 py-3 font-medium">底部浮标广告</td>
+                    <td class="px-4 py-3"><span class="tag tag-gray">浮标</span></td>
+                    <td class="px-4 py-3 text-center">
+                      <span class="tag tag-gray">小程序</span>
+                    </td>
+                    <td class="px-4 py-3 text-center text-gray-600">—</td>
+                    <td class="px-4 py-3 text-center font-medium text-gray-400">0</td>
+                    <td class="px-4 py-3 text-center"><span class="font-medium text-gray-400">—</span></td>
+                    <td class="px-4 py-3 text-center"><span class="tag tag-red">已暂停</span></td>
+                    <td class="px-4 py-3 text-center">
+                      <button onclick="event.stopPropagation();openModal('detailModal')" class="text-[#165DFF] hover:text-blue-700 text-sm mr-2 btn-click">配置</button>
+                      <button onclick="event.stopPropagation()" class="text-[#00B42A] hover:text-green-700 text-sm btn-click">启用</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="flex items-center justify-between px-4 py-3 border-t border-gray-200">
+              <span class="text-sm text-gray-500">共 24 条记录，当前第 1/5 页</span>
+              <div class="flex items-center gap-1">
+                <button class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50 btn-click">上一页</button>
+                <button class="px-3 py-1 bg-[#165DFF] text-white rounded text-sm">1</button>
+                <button class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50 btn-click">2</button>
+                <button class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50 btn-click">3</button>
+                <span class="px-2 text-gray-400">...</span>
+                <button class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50 btn-click">5</button>
+                <button class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50 btn-click">下一页</button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- 分隔线 -->
+    <div id="divider" class="w-px bg-gray-300"></div>
+
+    <!-- 右侧：功能说明 -->
+    <div id="right-panel" class="w-[22%] lg:w-[20%] overflow-y-auto bg-amber-50 border-l-2 border-dashed border-amber-300">
+      <div class="p-4">
+        <div class="mb-4 p-3 bg-amber-100 border border-amber-300 rounded-lg">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2 py-0.5 bg-amber-500 text-white text-[10px] font-bold rounded uppercase tracking-wide">Prototype</span>
+            <span class="text-xs font-semibold text-amber-800">原型说明</span>
+          </div>
+          <p class="text-[11px] text-amber-700 leading-relaxed">
+            运营资源位后台管理系统，用于管理 App/H5/小程序中的 Banner、开屏、弹窗、信息流等广告资源位。悬停左侧区域可高亮连线。
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-amber-200">
+          <i class="fas fa-map-signs text-amber-600"></i>
+          <h2 class="text-sm font-bold text-amber-900">功能说明</h2>
+        </div>
+
+        <div class="space-y-3">
+          <div class="proto-desc p-3" data-proto-id="1">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">1</span>
+              <div>
+                <h3 class="text-sm font-semibold text-gray-800">资源位列表</h3>
+                <p class="text-xs text-gray-500 mt-1">核心管理入口。展示所有已创建的资源位，支持按位置类型、状态、适用端等维度筛选。可快速查看每个资源位的实时数据表现。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="proto-desc p-3" data-proto-id="2">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">2</span>
+              <div>
+                <h3 class="text-sm font-semibold text-gray-800">新建资源位</h3>
+                <p class="text-xs text-gray-500 mt-1">创建新的运营资源位。需配置：</p>
+                <ul class="text-xs text-gray-500 mt-1 ml-4 list-disc space-y-0.5">
+                  <li><strong>基础信息</strong>：名称、位置类型（Banner/开屏/弹窗/信息流/浮标）</li>
+                  <li><strong>展示规则</strong>：适用端、展示频次、用户定向</li>
+                  <li><strong>投放时间</strong>：开始/结束时间、排期策略</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="proto-desc p-3" data-proto-id="3">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">3</span>
+              <div>
+                <h3 class="text-sm font-semibold text-gray-800">多维度筛选</h3>
+                <p class="text-xs text-gray-500 mt-1">支持按资源位名称/ID搜索，以及按位置类型、投放状态、适用客户端进行组合筛选，快速定位目标资源位。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="proto-desc p-3" data-proto-id="4">
+            <div class="flex items-start gap-2">
+              <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">4</span>
+              <div>
+                <h3 class="text-sm font-semibold text-gray-800">资源位数据表格</h3>
+                <p class="text-xs text-gray-500 mt-1">以列表形式展示所有资源位信息，包含：</p>
+                <ul class="text-xs text-gray-500 mt-1 ml-4 list-disc space-y-0.5">
+                  <li><strong>基本属性</strong>：ID、名称、位置类型、适用端</li>
+                  <li><strong>当前投放</strong>：正在展示的内容名称</li>
+                  <li><strong>实时数据</strong>：今日曝光量、点击率</li>
+                  <li><strong>状态管理</strong>：投放中/已暂停/待上线/已过期</li>
+                  <li><strong>操作入口</strong>：配置详情、暂停/启用投放</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SVG 连线层 -->
+  <svg id="connections" class="absolute top-0 left-0 w-full h-full pointer-events-none"></svg>
+
+  <!-- 模态框：资源位配置详情 -->
+  <div id="detailModal" class="modal-overlay modal-hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
+    <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-3xl mx-4 overflow-hidden" style="max-height: 85vh; overflow-y: auto;">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+        <h3 class="text-lg font-semibold text-gray-800">资源位配置 - 首页顶部Banner (RS-001)</h3>
+        <button onclick="closeModal('detailModal')" class="text-gray-400 hover:text-gray-600 btn-click"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="px-6 py-5">
+        <!-- 基本信息 -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+          <h4 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+            <i class="fas fa-info-circle text-[#165DFF]"></i> 基本信息
+          </h4>
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">资源位ID</label>
+              <div class="text-sm font-mono font-medium text-gray-800">RS-001</div>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">资源位名称</label>
+              <div class="text-sm font-medium text-gray-800">首页顶部Banner</div>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">位置类型</label>
+              <div class="text-sm"><span class="tag tag-blue">Banner</span></div>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">尺寸规格</label>
+              <div class="text-sm text-gray-800">750 x 320 px</div>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">适用端</label>
+              <div class="text-sm">
+                <span class="tag tag-gray mr-1">iOS</span>
+                <span class="tag tag-gray">Android</span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">轮播间隔</label>
+              <div class="text-sm text-gray-800">3秒</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 当前投放内容 -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <i class="fas fa-images text-[#165DFF]"></i> 投放内容 <span class="tag tag-gray text-xs">3个素材轮播</span>
+            </h4>
+            <button class="text-[#165DFF] text-xs hover:text-blue-700 btn-click"><i class="fas fa-plus mr-1"></i>添加素材</button>
+          </div>
+          <div class="space-y-2">
+            <div class="flex items-center justify-between bg-white rounded-md px-3 py-2 border border-gray-200">
+              <div class="flex items-center gap-3">
+                <div class="w-16 h-8 bg-gradient-to-r from-red-400 to-orange-400 rounded flex items-center justify-center text-white text-[10px] font-bold">618</div>
+                <div>
+                  <span class="text-sm font-medium">618大促主会场</span>
+                  <span class="text-xs text-gray-400 ml-2">优先级: 1</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="tag tag-green text-xs">展示中</span>
+                <button class="text-gray-400 hover:text-gray-600 text-xs btn-click"><i class="fas fa-edit"></i></button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-white rounded-md px-3 py-2 border border-gray-200">
+              <div class="flex items-center gap-3">
+                <div class="w-16 h-8 bg-gradient-to-r from-blue-400 to-purple-400 rounded flex items-center justify-center text-white text-[10px] font-bold">新品</div>
+                <div>
+                  <span class="text-sm font-medium">新品首发专场</span>
+                  <span class="text-xs text-gray-400 ml-2">优先级: 2</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="tag tag-green text-xs">展示中</span>
+                <button class="text-gray-400 hover:text-gray-600 text-xs btn-click"><i class="fas fa-edit"></i></button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-white rounded-md px-3 py-2 border border-gray-200">
+              <div class="flex items-center gap-3">
+                <div class="w-16 h-8 bg-gradient-to-r from-green-400 to-teal-400 rounded flex items-center justify-center text-white text-[10px] font-bold">会员</div>
+                <div>
+                  <span class="text-sm font-medium">会员专属福利</span>
+                  <span class="text-xs text-gray-400 ml-2">优先级: 3</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="tag tag-green text-xs">展示中</span>
+                <button class="text-gray-400 hover:text-gray-600 text-xs btn-click"><i class="fas fa-edit"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 展示规则 -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+          <h4 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+            <i class="fas fa-sliders-h text-[#165DFF]"></i> 展示规则
+          </h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">展示频次</label>
+              <div class="text-sm text-gray-800">每日不限次</div>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">用户定向</label>
+              <div class="text-sm text-gray-800">全量用户</div>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">投放时间</label>
+              <div class="text-sm text-gray-800">2024-06-01 ~ 2024-06-30</div>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">时段控制</label>
+              <div class="text-sm text-gray-800">全天 (00:00 - 24:00)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 数据表现 -->
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h4 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+            <i class="fas fa-chart-bar text-[#165DFF]"></i> 近7天数据表现
+          </h4>
+          <div class="grid grid-cols-4 gap-3">
+            <div class="bg-white rounded-md p-3 text-center border border-gray-200">
+              <div class="text-lg font-bold text-gray-800">3.2M</div>
+              <div class="text-xs text-gray-500">总曝光</div>
+            </div>
+            <div class="bg-white rounded-md p-3 text-center border border-gray-200">
+              <div class="text-lg font-bold text-[#165DFF]">134K</div>
+              <div class="text-xs text-gray-500">总点击</div>
+            </div>
+            <div class="bg-white rounded-md p-3 text-center border border-gray-200">
+              <div class="text-lg font-bold text-[#00B42A]">4.2%</div>
+              <div class="text-xs text-gray-500">点击率</div>
+            </div>
+            <div class="bg-white rounded-md p-3 text-center border border-gray-200">
+              <div class="text-lg font-bold text-[#FF7D00]">12.8K</div>
+              <div class="text-xs text-gray-500">转化数</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <button onclick="closeModal('detailModal')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-lg font-medium btn-click">关闭</button>
+        <button class="px-4 py-2 bg-[#165DFF] hover:bg-blue-600 text-white text-sm rounded-lg font-medium btn-click">保存修改</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模态框：新建资源位 -->
+  <div id="addSlotModal" class="modal-overlay modal-hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/40">
+    <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden" style="max-height: 85vh; overflow-y: auto;">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-800">新建资源位</h3>
+        <button onclick="closeModal('addSlotModal')" class="text-gray-400 hover:text-gray-600 btn-click"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">资源位名称 <span class="text-red-500">*</span></label>
+          <input type="text" placeholder="如：首页底部Banner" class="form-input w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">位置类型 <span class="text-red-500">*</span></label>
+          <select class="form-input w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            <option>请选择位置类型</option>
+            <option>Banner</option>
+            <option>开屏广告</option>
+            <option>弹窗</option>
+            <option>信息流</option>
+            <option>浮标</option>
+            <option>插屏</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">适用客户端 <span class="text-red-500">*</span></label>
+          <div class="flex items-center gap-4 mt-1">
+            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked class="rounded text-[#165DFF]"><span class="text-sm">iOS</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked class="rounded text-[#165DFF]"><span class="text-sm">Android</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="rounded text-[#165DFF]"><span class="text-sm">H5</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="rounded text-[#165DFF]"><span class="text-sm">小程序</span></label>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">宽度 (px)</label>
+            <input type="number" placeholder="750" class="form-input w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">高度 (px)</label>
+            <input type="number" placeholder="320" class="form-input w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">展示频次</label>
+          <select class="form-input w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            <option>每日不限次</option>
+            <option>每日1次</option>
+            <option>每日3次</option>
+            <option>仅首次访问</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">开始时间</label>
+            <input type="date" class="form-input w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">结束时间</label>
+            <input type="date" class="form-input w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">备注说明</label>
+          <textarea rows="2" placeholder="可选填写资源位用途说明" class="form-input w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none"></textarea>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <button onclick="closeModal('addSlotModal')" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 btn-click">取消</button>
+        <button onclick="closeModal('addSlotModal'); alert('资源位创建成功！')" class="px-4 py-2 bg-[#165DFF] hover:bg-blue-600 text-white text-sm rounded-lg font-medium btn-click">创建</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const svg = document.getElementById('connections');
+    const connections = [];
+
+    function drawConnections() {
+      svg.innerHTML = '';
+      connections.length = 0;
+
+      const leftElements = document.querySelectorAll('.proto-element[data-proto-id]');
+      const rightElements = document.querySelectorAll('.proto-desc[data-proto-id]');
+
+      leftElements.forEach(leftEl => {
+        const protoId = leftEl.getAttribute('data-proto-id');
+        const rightEl = document.querySelector(`.proto-desc[data-proto-id="${protoId}"]`);
+        if (!rightEl) return;
+
+        const leftRect = leftEl.getBoundingClientRect();
+        const rightRect = rightEl.getBoundingClientRect();
+        const svgRect = svg.getBoundingClientRect();
+
+        const x1 = leftRect.right - svgRect.left;
+        const y1 = leftRect.top + leftRect.height / 2 - svgRect.top;
+        const x2 = rightRect.left - svgRect.left;
+        const y2 = rightRect.top + rightRect.height / 2 - svgRect.top;
+
+        const cp1x = x1 + (x2 - x1) * 0.5;
+        const cp1y = y1;
+        const cp2x = x1 + (x2 - x1) * 0.5;
+        const cp2y = y2;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`);
+        path.setAttribute('class', 'connection-line');
+        path.setAttribute('data-proto-id', protoId);
+        svg.appendChild(path);
+
+        const midX = (x1 + x2) / 2;
+        const midY = (y1 + y2) / 2;
+        const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        bg.setAttribute('cx', midX);
+        bg.setAttribute('cy', midY);
+        bg.setAttribute('r', 11);
+        bg.setAttribute('class', 'connection-label-bg');
+        svg.appendChild(bg);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', midX);
+        text.setAttribute('y', midY);
+        text.setAttribute('dy', '0.05em');
+        text.setAttribute('class', 'connection-label');
+        text.textContent = protoId;
+        svg.appendChild(text);
+
+        connections.push({ protoId, path, leftEl, rightEl });
+      });
+    }
+
+    function highlightConnection(protoId, active) {
+      const conn = connections.find(c => c.protoId === protoId);
+      if (!conn) return;
+      if (active) {
+        conn.path.classList.add('active');
+        conn.leftEl.classList.add('active-highlight');
+        conn.rightEl.classList.add('active-highlight');
+      } else {
+        conn.path.classList.remove('active');
+        conn.leftEl.classList.remove('active-highlight');
+        conn.rightEl.classList.remove('active-highlight');
+      }
+    }
+
+    function bindHoverEvents() {
+      document.querySelectorAll('.proto-element[data-proto-id]').forEach(el => {
+        el.addEventListener('mouseenter', () => highlightConnection(el.getAttribute('data-proto-id'), true));
+        el.addEventListener('mouseleave', () => highlightConnection(el.getAttribute('data-proto-id'), false));
+      });
+      document.querySelectorAll('.proto-desc[data-proto-id]').forEach(el => {
+        el.addEventListener('mouseenter', () => highlightConnection(el.getAttribute('data-proto-id'), true));
+        el.addEventListener('mouseleave', () => highlightConnection(el.getAttribute('data-proto-id'), false));
+      });
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('modal-hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('modal-hidden'); }
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.add('modal-hidden'); });
+    });
+
+    function selectRow(row) {
+      document.querySelectorAll('.data-table tbody tr').forEach(tr => tr.classList.remove('selected'));
+      row.classList.add('selected');
+    }
+
+    let mobileShowDesc = false;
+    function toggleMobileView() {
+      mobileShowDesc = !mobileShowDesc;
+      const leftPanel = document.getElementById('left-panel');
+      const rightPanel = document.getElementById('right-panel');
+      const btn = document.getElementById('mobileToggle');
+      if (mobileShowDesc) {
+        leftPanel.style.display = 'none'; rightPanel.style.height = '100vh'; btn.innerHTML = '<i class="fas fa-desktop"></i>';
+      } else {
+        leftPanel.style.display = ''; rightPanel.style.height = ''; btn.innerHTML = '<i class="fas fa-info"></i>';
+      }
+    }
+
+    function init() { drawConnections(); bindHoverEvents(); }
+    document.addEventListener('DOMContentLoaded', () => { setTimeout(init, 100); });
+    let resizeTimer;
+    window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(init, 150); });
+    document.getElementById('left-panel').addEventListener('scroll', () => { requestAnimationFrame(drawConnections); });
+    document.getElementById('right-panel').addEventListener('scroll', () => { requestAnimationFrame(drawConnections); });
+  </script>
+</body>
+</html>
